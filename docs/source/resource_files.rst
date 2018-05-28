@@ -4,10 +4,6 @@
 Resource files
 ================================================================================
 
-.. contents:: Contents
-   :depth: 2
-   :backlinks: none
-
 A number of files containing preconfigured transformations and default parameters
 for certain projections are bundled with the PROJ distribution. Init files
 contains preconfigured proj-strings for various coordinate reference systems
@@ -107,9 +103,10 @@ Procedure:
 
 1. Visit the `NTv2 <http://webapp.geod.nrcan.gc.ca/geod/tools-outils/applications.php?locale=en#ntv2>`__, and register/login
 2. Follow the Download NTv2 link near the bottom of the page.
-3. Unzip `ntv2_100325.zip` (or similar), and move the grid shift file `NTV2_0.GSB` to the proj directory (be sure to change the name to lowercase for consistency)
-   * e.g.: `mv NTV2_0.GSB /usr/local/share/proj/ntv2_0.gsb`
+3. Unzip ``ntv2_100325.zip`` (or similar), and move the grid shift file ``NTV2_0.GSB`` to the proj directory (be sure to change the name to lowercase for consistency) 
+   e.g.: ``mv NTV2_0.GSB /usr/local/share/proj/ntv2_0.gsb``
 4. Test it using:
+
     ::
 
         cs2cs +proj=latlong +ellps=clrk66 +nadgrids=@ntv2_0.gsb +to +proj=latlong +ellps=GRS80 +datum=NAD83
@@ -407,7 +404,7 @@ ITRF2005:
 
 ::
 
-    +init=ITRF2000:ITRF2005 +tobs=2010.5
+    +init=ITRF2000:ITRF2005 +t_obs=2010.5
 
 which then expands to
 
@@ -415,8 +412,8 @@ which then expands to
 
     +proj=helmert +x=-0.0001 +y=0.0008 +z=0.0058 +s=-0.0004
     +dx=0.0002 +dy=-0.0001 +dz=0.0018 +ds=-0.000008
-    +epoch=2000.0 +transpose
-    +tobs=2010.5
+    +t_epoch=2000.0 +transpose
+    +t_obs=2010.5
 
 Below is a list of the init files that are packaged with PROJ.
 

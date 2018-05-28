@@ -28,11 +28,15 @@
 
 #define PJ_LIB__
 
+#include <errno.h>
+#include <math.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "proj_internal.h"
 #include "projects.h"
-#include <string.h>
-#include <math.h>
-#include <errno.h>
 
 /************************************************************************/
 /*                             swap_words()                             */
@@ -146,7 +150,7 @@ int pj_gridinfo_load( projCtx ctx, PJ_GRIDINFO *gi )
 
         if( fid == NULL )
         {
-            pj_ctx_set_errno( ctx, -38 );
+            pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
             pj_release_lock();
             return 0;
         }
@@ -173,7 +177,7 @@ int pj_gridinfo_load( projCtx ctx, PJ_GRIDINFO *gi )
 
         if( fid == NULL )
         {
-            pj_ctx_set_errno( ctx, -38 );
+            pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
             pj_release_lock();
             return 0;
         }
@@ -205,7 +209,7 @@ int pj_gridinfo_load( projCtx ctx, PJ_GRIDINFO *gi )
 
         if( fid == NULL )
         {
-            pj_ctx_set_errno( ctx, -38 );
+            pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
             pj_release_lock();
             return 0;
         }
@@ -235,7 +239,7 @@ int pj_gridinfo_load( projCtx ctx, PJ_GRIDINFO *gi )
             {
                 pj_dalloc( row_buf );
                 pj_dalloc( ct_tmp.cvs );
-                pj_ctx_set_errno( ctx, -38 );
+                pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
                 pj_release_lock();
                 return 0;
             }
@@ -286,7 +290,7 @@ int pj_gridinfo_load( projCtx ctx, PJ_GRIDINFO *gi )
 
         if( fid == NULL )
         {
-            pj_ctx_set_errno( ctx, -38 );
+            pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
             pj_release_lock();
             return 0;
         }
@@ -316,7 +320,7 @@ int pj_gridinfo_load( projCtx ctx, PJ_GRIDINFO *gi )
             {
                 pj_dalloc( row_buf );
                 pj_dalloc( ct_tmp.cvs );
-                pj_ctx_set_errno( ctx, -38 );
+                pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
                 pj_release_lock();
                 return 0;
             }
@@ -361,7 +365,7 @@ int pj_gridinfo_load( projCtx ctx, PJ_GRIDINFO *gi )
 
         if( fid == NULL )
         {
-            pj_ctx_set_errno( ctx, -38 );
+            pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
             pj_release_lock();
             return 0;
         }
@@ -445,7 +449,7 @@ static int pj_gridinfo_init_ntv2( projCtx ctx, PAFile fid, PJ_GRIDINFO *gilist )
 /* -------------------------------------------------------------------- */
     if( pj_ctx_fread( ctx, header, sizeof(header), 1, fid ) != 1 )
     {
-        pj_ctx_set_errno( ctx, -38 );
+        pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
         return 0;
     }
 
@@ -488,13 +492,13 @@ static int pj_gridinfo_init_ntv2( projCtx ctx, PAFile fid, PJ_GRIDINFO *gilist )
 /* -------------------------------------------------------------------- */
         if( pj_ctx_fread( ctx, header, sizeof(header), 1, fid ) != 1 )
         {
-            pj_ctx_set_errno( ctx, -38 );
+            pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
             return 0;
         }
 
         if( strncmp((const char *) header,"SUB_NAME",8) != 0 )
         {
-            pj_ctx_set_errno( ctx, -38 );
+            pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
             return 0;
         }
 
@@ -555,7 +559,7 @@ static int pj_gridinfo_init_ntv2( projCtx ctx, PAFile fid, PJ_GRIDINFO *gilist )
                     gs_count, ct->lim.lam, ct->lim.phi,
                     ct->lim.lam * ct->lim.phi );
             pj_dalloc(ct);
-            pj_ctx_set_errno( ctx, -38 );
+            pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
             return 0;
         }
 
@@ -670,7 +674,7 @@ static int pj_gridinfo_init_ntv1( projCtx ctx, PAFile fid, PJ_GRIDINFO *gi )
 /* -------------------------------------------------------------------- */
     if( pj_ctx_fread( ctx, header, sizeof(header), 1, fid ) != 1 )
     {
-        pj_ctx_set_errno( ctx, -38 );
+        pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
         return 0;
     }
 
@@ -692,7 +696,7 @@ static int pj_gridinfo_init_ntv1( projCtx ctx, PAFile fid, PJ_GRIDINFO *gi )
     {
         pj_log( ctx, PJ_LOG_ERROR,
                 "NTv1 grid shift file has wrong record count, corrupt?" );
-        pj_ctx_set_errno( ctx, -38 );
+        pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
         return 0;
     }
 
@@ -757,7 +761,7 @@ static int pj_gridinfo_init_gtx( projCtx ctx, PAFile fid, PJ_GRIDINFO *gi )
 /* -------------------------------------------------------------------- */
     if( pj_ctx_fread( ctx, header, sizeof(header), 1, fid ) != 1 )
     {
-        pj_ctx_set_errno( ctx, -38 );
+        pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
         return 0;
     }
 
@@ -783,7 +787,7 @@ static int pj_gridinfo_init_gtx( projCtx ctx, PAFile fid, PJ_GRIDINFO *gi )
     {
         pj_log( ctx, PJ_LOG_ERROR,
                 "gtx file header has invalid extents, corrupt?");
-        pj_ctx_set_errno( ctx, -38 );
+        pj_ctx_set_errno( ctx, PJD_ERR_FAILED_TO_LOAD_GRID );
         return 0;
     }
 

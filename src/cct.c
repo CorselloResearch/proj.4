@@ -80,15 +80,13 @@ Thomas Knudsen, thokn@sdfe.dk, 2016-05-25/2017-10-26
 
 #include "proj.h"
 #include "proj_internal.h"
+#include "proj_strtod.h"
 #include "projects.h"
 #include "optargpm.h"
 
 
-/* Prototypes for functions in proj_strtod.c */
-double proj_strtod(const char *str, char **endptr);
-double proj_atof(const char *str);
 static void logger(void *data, int level, const char *msg);
-static void print(PJ_LOG_LEVEL verbosity, const char *fmt, ...);
+static void print(PJ_LOG_LEVEL log_level, const char *fmt, ...);
 
 /* Prototypes from functions in this file */
 char *column (char *buf, int n);
@@ -101,12 +99,12 @@ static const char usage[] = {
     "--------------------------------------------------------------------------------\n"
     "Options:\n"
     "--------------------------------------------------------------------------------\n"
-    "    -o /path/to/file  Specify output file name\n"
     "    -c x,y,z,t        Specify input columns for (up to) 4 input parameters.\n"
     "                      Defaults to 1,2,3,4\n"
-    "    -z value          Provide a fixed z value for all input data (e.g. -z 0)\n"
-    "    -t value          Provide a fixed t value for all input data (e.g. -t 0)\n"
     "    -I                Do the inverse transformation\n"
+    "    -o /path/to/file  Specify output file name\n"
+    "    -t value          Provide a fixed t value for all input data (e.g. -t 0)\n"
+    "    -z value          Provide a fixed z value for all input data (e.g. -z 0)\n"
     "    -s n              Skip n first lines of a infile\n"
     "    -v                Verbose: Provide non-essential informational output.\n"
     "                      Repeat -v for more verbosity (e.g. -vv)\n"
@@ -187,8 +185,10 @@ static void print(PJ_LOG_LEVEL log_level, const char *fmt, ...) {
     va_start( args, fmt );
 
     msg_buf = (char *) malloc(100000);
-    if( msg_buf == NULL )
+    if( msg_buf == NULL ) {
+        va_end( args );
         return;
+    }
 
     vsprintf( msg_buf, fmt, args );
 

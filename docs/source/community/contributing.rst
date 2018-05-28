@@ -86,19 +86,19 @@ Write documentation
 
 PROJ is in dire need of better documentation. Any contributions of
 documentation are greatly appreciated. The PROJ documentation is
-available on `proj4.org <ttp://proj4.org>`__. The website is generated
+available on `proj4.org <http://proj4.org>`__. The website is generated
 with `Sphinx <http://www.sphinx-doc.org/en/stable/>`__. Contributions to
 the documentation should be made as `Pull
 Requests <https://github.com/OSGeo/proj.4/pulls>`__ on GitHub.
 
 If you intend to document one of PROJ's supported projections please
-use the `Mercator projection <http://proj4.org/projections/merc.html>`__
+use the :doc:`Mercator projection <../operations/projections/merc>`
 as a template.
 
 Code contributions
 ------------------
 
-See :doc:`Code contributions <development/for_proj_contributors>`
+See :doc:`Code contributions <code_contributions>`
 
 Legalese
 ~~~~~~~~

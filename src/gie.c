@@ -108,6 +108,7 @@ Thomas Knudsen, thokn@sdfe.dk, 2017-10-01/2017-10-08
 #include <errno.h>
 #include <math.h>
 #include <stdarg.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -115,6 +116,7 @@ Thomas Knudsen, thokn@sdfe.dk, 2017-10-01/2017-10-08
 #include "proj.h"
 #include "proj_internal.h"
 #include "proj_math.h"
+#include "proj_strtod.h"
 #include "projects.h"
 
 #include "optargpm.h"
@@ -134,15 +136,15 @@ typedef struct ffio {
     size_t level;
 }  ffio;
 
-static int get_inp (ffio *F);
-static int skip_to_next_tag (ffio *F);
-static int step_into_gie_block (ffio *F);
-static int locate_tag (ffio *F, const char *tag);
-static int nextline (ffio *F);
-static int at_end_delimiter (ffio *F);
-static const char *at_tag (ffio *F);
-static int at_decorative_element (ffio *F);
-static ffio *ffio_destroy (ffio *F);
+static int get_inp (ffio *G);
+static int skip_to_next_tag (ffio *G);
+static int step_into_gie_block (ffio *G);
+static int locate_tag (ffio *G, const char *tag);
+static int nextline (ffio *G);
+static int at_end_delimiter (ffio *G);
+static const char *at_tag (ffio *G);
+static int at_decorative_element (ffio *G);
+static ffio *ffio_destroy (ffio *G);
 static ffio *ffio_create (const char **tags, size_t n_tags, size_t max_record_size);
 
 static const char *gie_tags[] = {
@@ -152,10 +154,6 @@ static const char *gie_tags[] = {
 
 static const size_t n_gie_tags = sizeof gie_tags / sizeof gie_tags[0];
 
-
-/* from proj_strtod.c */
-double proj_strtod(const char *str, char **endptr);
-double proj_atof(const char *str);
 
 int   main(int argc, char **argv);
 
@@ -303,9 +301,11 @@ int main (int argc, char **argv) {
         process_file (o->fargv[i]);
 
     if (T.verbosity > 0) {
-        if (o->fargc > 1)
-        fprintf (T.fout, "%sGrand total: %d. Success: %d, Skipped: %d, Failure: %d\n",
-                 delim, T.grand_ok+T.grand_ko+T.grand_skip, T.grand_ok, T.grand_skip, T.grand_ko);
+        if (o->fargc > 1) {
+            fprintf (T.fout, "%sGrand total: %d. Success: %d, Skipped: %d, Failure: %d\n",
+                     delim, T.grand_ok+T.grand_ko+T.grand_skip, T.grand_ok, T.grand_skip,
+                     T.grand_ko);
+        }
         fprintf (T.fout, "%s", delim);
         if (T.verbosity > 1) {
             fprintf (T.fout, "Failing roundtrips: %4d,    Succeeding roundtrips: %4d\n", fail_rtps, succ_rtps);
@@ -414,10 +414,11 @@ static int process_file (const char *fname) {
     T.grand_ok   += T.total_ok;
     T.grand_ko   += T.total_ko;
     T.grand_skip += T.grand_skip;
-    if (T.verbosity > 0)
-    fprintf (T.fout, "%stotal: %2d tests succeeded, %2d tests skipped, %2d tests %s\n",
-             delim, T.total_ok, T.total_skip, T.total_ko, T.total_ko? "FAILED!": "failed.");
-
+    if (T.verbosity > 0) {
+        fprintf (T.fout, "%stotal: %2d tests succeeded, %2d tests skipped, %2d tests %s\n",
+                 delim, T.total_ok, T.total_skip, T.total_ko,
+                 T.total_ko? "FAILED!": "failed.");
+    }
     if (F->level==0)
         return errmsg (-3, "File '%s':Missing '<gie>' cmnd - bye!\n", fname);
     if (F->level && F->level%2)
@@ -701,6 +702,20 @@ static int roundtrip (const char *args) {
 /*****************************************************************************
 Check how far we go from the ACCEPTed point when doing successive
 back/forward transformation pairs.
+
+Without args, roundtrip defaults to 100 iterations:
+
+  roundtrip
+
+With one arg, roundtrip will default to a tolerance of T.tolerance:
+
+  roundtrip ntrips
+
+With two args:
+
+  roundtrip ntrips tolerance
+
+Always returns 0.
 ******************************************************************************/
     int ntrips;
     double d, r, ans;
@@ -715,7 +730,17 @@ back/forward transformation pairs.
     }
 
     ans = proj_strtod (args, &endp);
-    ntrips = (int) (endp==args? 100: fabs(ans));
+    if (endp==args) {
+        /* Default to 100 iterations if not args. */
+        ntrips = 100;
+    } else {
+        if (ans < 1.0 || ans > 1000000.0) {
+            errmsg (2, "Invalid number of roundtrips: %lf\n", ans);
+            return another_failing_roundtrip ();
+        }
+        ntrips = (int)ans;
+    }
+
     d = strtod_scaled (endp, 1);
     d = d==HUGE_VAL?  T.tolerance:  d;
 
@@ -1159,30 +1184,6 @@ and provides ample room for comment, documentation, and test material.
 See the PROJ ".gie" test suites for examples of supported formatting.
 
 ****************************************************************************************/
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-#include <string.h>
-#include <ctype.h>
-
-#include <math.h>
-#include <errno.h>
-
-
-
-static int get_inp (ffio *F);
-static int skip_to_next_tag (ffio *F);
-static int step_into_gie_block (ffio *F);
-static int locate_tag (ffio *F, const char *tag);
-static int nextline (ffio *F);
-static int at_end_delimiter (ffio *F);
-static const char *at_tag (ffio *F);
-static int at_decorative_element (ffio *F);
-static ffio *ffio_destroy (ffio *F);
-static ffio *ffio_create (const char **tags, size_t n_tags, size_t max_record_size);
-
 
 
 /***************************************************************************************/
@@ -1940,6 +1941,19 @@ static int cart_selftest (void) {
     /* pj_init_ctx should default to WGS84 */
     if (P->a != 6378137.0) return 124;
     if (P->f != 1.0/298.257223563) return 125;
+    proj_destroy(P);
+
+    /* Test that pj_fwd* and pj_inv* returns NaNs when receiving NaN input */
+    P = proj_create(PJ_DEFAULT_CTX, "+proj=merc");
+    if (0==P) return 0;
+    a = proj_coord(NAN, NAN, NAN, NAN);
+    a = proj_trans(P, PJ_FWD, a);
+    if ( !( isnan(a.v[0]) && isnan(a.v[1]) && isnan(a.v[2]) && isnan(a.v[3]) ) )
+        return 126;
+    a = proj_coord(NAN, NAN, NAN, NAN);
+    a = proj_trans(P, PJ_INV, a);
+    if ( !( isnan(a.v[0]) && isnan(a.v[1]) && isnan(a.v[2]) && isnan(a.v[3]) ) )
+        return 127;
     proj_destroy(P);
 
     return 0;

@@ -24,6 +24,10 @@
 ** SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #define PJ_LIB__
+
+#include <math.h>
+#include <stdlib.h>
+
 #include "projects.h"
 
 #define MAX_ITER 20
@@ -92,6 +96,6 @@ LP pj_inv_gauss(projCtx ctx, LP slp, const void *data) {
     }
     /* convergence failed */
     if (!i)
-        pj_ctx_set_errno( ctx, -17 );
+        pj_ctx_set_errno(ctx, PJD_ERR_NON_CONV_INV_MERI_DIST);
     return (elp);
 }

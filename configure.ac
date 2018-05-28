@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PROJ], [5.0.0],
+AC_INIT([PROJ], [5.1.0],
         [https://github.com/OSGeo/proj.4/issues], proj, [http://proj4.org])
 AC_CONFIG_MACRO_DIR([m4])
 AC_LANG(C)
@@ -144,7 +144,7 @@ AC_SUBST(THREAD_LIB,$THREAD_LIB)
 AC_CONFIG_FILES([Makefile cmake/Makefile src/Makefile
                  test/Makefile test/gie/Makefile test/gigs/Makefile
                  man/Makefile man/man1/Makefile man/man3/Makefile nad/Makefile
-                 jniwrap/Makefile jniwrap/org/Makefile jniwrap/org/proj4/Makefile])
+                 jniwrap/Makefile jniwrap/org.osgeo.proj/Makefile jniwrap/org.osgeo.proj/org/Makefile jniwrap/org.osgeo.proj/org/proj4/Makefile])
 AC_CONFIG_FILES([nad/install], [chmod +x nad/install])
 
 AC_CONFIG_FILES([proj.pc])

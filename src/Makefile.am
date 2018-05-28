@@ -10,7 +10,7 @@ AM_CPPFLAGS =	-DPROJ_LIB=\"$(pkgdatadir)\" \
 		-DMUTEX_@MUTEX_SETTING@ @JNI_INCLUDE@
 
 include_HEADERS = proj.h proj_api.h projects.h geodesic.h \
-	org_proj4_Projections.h org_proj4_PJ.h
+	org_proj4_PJ.h
 
 EXTRA_DIST = makefile.vc proj.def bin_cct.cmake bin_gie.cmake bin_cs2cs.cmake \
 			 bin_geod.cmake bin_nad2bin.cmake bin_proj.cmake \
@@ -18,11 +18,11 @@ EXTRA_DIST = makefile.vc proj.def bin_cct.cmake bin_gie.cmake bin_cs2cs.cmake \
 
 proj_SOURCES = proj.c gen_cheb.c p_series.c
 cs2cs_SOURCES = cs2cs.c gen_cheb.c p_series.c
-cct_SOURCES = cct.c proj_strtod.c optargpm.h
+cct_SOURCES = cct.c proj_strtod.c proj_strtod.h optargpm.h
 nad2bin_SOURCES = nad2bin.c
 geod_SOURCES = geod.c geod_set.c geod_interface.c geod_interface.h
 
-gie_SOURCES = gie.c proj_strtod.c optargpm.h
+gie_SOURCES = gie.c proj_strtod.c proj_strtod.h optargpm.h
 multistresstest_SOURCES = multistresstest.c
 test228_SOURCES = test228.c
 geodtest_SOURCES = geodtest.c
@@ -40,7 +40,7 @@ geodtest_LDADD = libproj.la
 
 lib_LTLIBRARIES = libproj.la
 
-libproj_la_LDFLAGS = -no-undefined -version-info 13:0:0
+libproj_la_LDFLAGS = -no-undefined -version-info 14:0:1
 
 libproj_la_SOURCES = \
 	pj_list.h proj_internal.h proj_math.h\

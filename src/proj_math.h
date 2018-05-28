@@ -25,31 +25,50 @@
  * DEALINGS IN THE SOFTWARE.
  *****************************************************************************/
 
-#include <math.h>
-
 #ifndef PROJ_MATH_H
 #define PROJ_MATH_H
+
+#include <math.h>
+#include <limits.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #if !(defined(HAVE_C99_MATH) && HAVE_C99_MATH)
 
+#ifndef NAN
+#ifdef _WIN32
+#define NAN sqrt(-1.0)
+#else
+#define NAN 0.0/0.0
+#endif
+#endif
 
 double  pj_hypot(double x, double y);
 double  pj_log1p(double x);
 double  pj_asinh(double x);
+double  pj_round(double x);
+long    pj_lround(double x);
 int     pj_isnan(double x);
 
 #define hypot   pj_hypot
 #define log1p   pj_log1p
 #define asinh   pj_asinh
-#define isnan   pj_isnan
+#define round   pj_round
+#define lround  pj_lround
 
+
+#ifdef isnan
+#undef isnan
+#endif
+
+#define isnan   pj_isnan
 
 #endif /* !(defined(HAVE_C99_MATH) && HAVE_C99_MATH) */
 
 #ifdef __cplusplus
 }
 #endif
-#endif /*PROJ_MATH_H */
+
+#endif /* PROJ_MATH_H */

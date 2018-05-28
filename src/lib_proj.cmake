@@ -26,13 +26,11 @@ endif(NOT USE_THREAD)
 find_package(Threads QUIET)
 if(USE_THREAD AND Threads_FOUND AND CMAKE_USE_WIN32_THREADS_INIT )
    add_definitions( -DMUTEX_win32)
-endif(USE_THREAD AND Threads_FOUND AND CMAKE_USE_WIN32_THREADS_INIT )
-if(USE_THREAD AND Threads_FOUND AND CMAKE_USE_PTHREADS_INIT )
+elseif(USE_THREAD AND Threads_FOUND AND CMAKE_USE_PTHREADS_INIT )
    add_definitions( -DMUTEX_pthread)
-endif(USE_THREAD AND Threads_FOUND AND CMAKE_USE_PTHREADS_INIT )
-if(USE_THREAD AND NOT Threads_FOUND)
+elseif(USE_THREAD AND NOT Threads_FOUND)
   message(FATAL_ERROR "No thread library found and thread/mutex support is required by USE_THREAD option")
-endif(USE_THREAD AND NOT Threads_FOUND)
+endif()
 
 
 ##############################################
@@ -258,8 +256,7 @@ if(JNI_SUPPORT)
   set(SRC_LIBPROJ_CORE ${SRC_LIBPROJ_CORE}
                        jniproj.c )
   set(HEADERS_LIBPROJ ${HEADERS_LIBPROJ}
-                        org_proj4_PJ.h
-                        org_proj4_Projections.h)
+                        org_proj4_PJ.h)
   source_group("Source Files\\JNI" FILES ${SRC_LIBPROJ_JNI})
   add_definitions(-DJNI_ENABLED)
   include_directories( ${JNI_INCLUDE_DIRS})

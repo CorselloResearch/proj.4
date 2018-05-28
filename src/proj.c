@@ -49,7 +49,7 @@ static char
 
 static const char
     *oterr = "*\t*",    /* output line for unprojectable input */
-    *usage = "%s\nusage: %s [ -beEfiIlormsStTvVwW [args] ] [ +opts[=arg] ] [ files ]\n";
+    *usage = "%s\nusage: %s [ -beEfiIlmorsStTvVwW [args] ] [ +opts[=arg] ] [ files ]\n";
 
 static struct FACTORS facs;
 
@@ -200,6 +200,7 @@ static void vprocess(FILE *fid) {
         emess(1,"binary I/O not available in -V option");
 
     for (;;) {
+        proj_errno_reset(Proj);
         ++emess_dat.File_line;
 
         if (!(s = fgets(line, MAX_LINE, fid)))

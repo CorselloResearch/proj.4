@@ -10,6 +10,7 @@ cmake_install.cmake
 install_manifest.txt
 cmake/project-config*.cmake
 README
+test-driver
 
 /.vs*
 /*.manifest
@@ -93,5 +94,8 @@ README
 /src/cct
 /src/gie
 /src/geodtest
+
+# Java bridge
+jniwrap/out
 
 /docs/build
