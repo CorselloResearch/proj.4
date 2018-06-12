@@ -524,11 +524,13 @@ Returns 1 on success, 0 on failure
             return 0;
         P->cart = skip_prep_fin (Q);
 
-        sprintf (def, "break_cs2cs_recursion     proj=cart  ellps=WGS84");
-        Q = proj_create (P->ctx, def);
-        if (0==Q)
-            return 0;
-        P->cart_wgs84 = skip_prep_fin (Q);
+        if (!P->is_geocent) {
+            sprintf (def, "break_cs2cs_recursion     proj=cart  ellps=WGS84");
+            Q = proj_create (P->ctx, def);
+            if (0==Q)
+                return 0;
+            P->cart_wgs84 = skip_prep_fin (Q);
+        }
     }
 
     return 1;
@@ -1019,7 +1021,7 @@ PJ_INIT_INFO proj_init_info(const char *initname){
 
     strncpy (key, initname, 64); /* make room for ":metadata\0" at the end */
     key[64] = 0;
-    strncat(key, ":metadata", 9);
+    memcpy(key + strlen(key), ":metadata", 9 + 1);
     strcpy(param, "+init=");
     /* The +strlen(param) avoids a cppcheck false positive warning */
     strncat(param + strlen(param), key, sizeof(param)-1-strlen(param));

@@ -31,6 +31,7 @@ import datetime
 # ones.
 extensions = [
     'sphinx.ext.mathjax',
+    'sphinxcontrib.bibtex',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -62,7 +63,7 @@ copyright = u'1983-{0}'.format(now.year)
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-version = '5.0.1'
+version = '5.1.0'
 
 # use same |release| as |version|
 release = version
